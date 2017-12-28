@@ -81,10 +81,13 @@ for version in $versions; do
 	fi
 	popd
 
-	git checkout master
+	# Main versions
+	git checkout main
 	create_version $version $node_version $version
+	# Slim versions
 	git checkout slim
 	create_version $version $node_version-slim $version-slim
+	# Alpine versions
 	git checkout alpine
 	create_version $version $node_version-alpine $version-alpine
 done
