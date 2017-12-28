@@ -1,9 +1,11 @@
-FROM node
+FROM node:alpine
 
 ## Uncommet checkout line to use this version
 # ENV KIBANA_VERSION 6.1.1
 
 RUN set -x \
+	&& apk update \
+	&& apk add git \
 	&& git clone https://github.com/elastic/kibana.git \
 	&& cd kibana \
 	# Uncomment if you want a specific version
