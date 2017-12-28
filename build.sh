@@ -59,7 +59,7 @@ create_version() {
 	# Create version
 	git tag -d $tagname		# Delete existing version
 	sed -i "s/.*FROM node.*/FROM node:$node/" Dockerfile
-	sed -i "s/.*ENV KIBANA_VERSION.*/ENV KIBANA_VERSION $kibana/" Dockerfile
+	sed -i "s/.*ENV KIBANA_VERSION.*/ENV KIBANA_VERSION tags\/v$kibana/" Dockerfile
 	git add Dockerfile
 	git commit -m "Kibana v$tagname"
 	git tag $tagname
