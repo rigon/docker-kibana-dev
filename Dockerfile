@@ -1,9 +1,11 @@
-FROM node
+FROM node:slim
 
 ## Uncommet checkout line to use this version
 # ENV KIBANA_VERSION 6.1.1
 
 RUN set -x \
+	&& apt-get update \
+	&& apt-get install -y git \
 	&& git clone https://github.com/elastic/kibana.git \
 	&& cd kibana \
 	# Uncomment if you want a specific version
