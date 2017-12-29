@@ -12,18 +12,23 @@ if [ ! -e Dockerfile ]; then
 	exit 1
 fi
 
+echo "A clone of Kibana repository is required to proceed in /tmp!"
+read -r -p "Do you want remove existing clone and clone again (YES/No)? " ans
+if [ "$ans" != "n" ]; then
+	pushd .
+	cd /tmp
+	echo -e "${YELLOW}Cloning Kibana...${NC}"
+	rm -rf kibana
+	git clone https://github.com/elastic/kibana.git
+	popd
+fi
+
+# Get list of tags from Kibana repository
 pushd .
-cd /tmp
-
-echo -e "${YELLOW}Cloning Kibana...${NC}"
-
-rm -rf kibana
-git clone https://github.com/elastic/kibana.git
-cd kibana
-
-versions=$(git tag | grep -o -e '^v[[:digit:]]\{1,\}\.[[:digit:]]\{1,\}\.[[:digit:]]\{1,\}$' | cut -dv -f2-)	# Filter only final versions
+cd /tmp/kibana
+# Get and filter only final versions
+versions=$(git tag | grep -o -e '^v[[:digit:]]\{1,\}\.[[:digit:]]\{1,\}\.[[:digit:]]\{1,\}$' | cut -dv -f2-)
 popd
-
 
 echo -e "${RED}CAUTION: THIS ACTION IS IRREVERSIBLE!!${NC}"
 echo "This will delete all tags in the local repository!"
