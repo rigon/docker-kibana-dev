@@ -34,9 +34,4 @@ Or if you are only developing one plugin, you might want to mount the plugin fol
     
 ## How to build
 
-The script `build.sh` automatically creates tags for every version of Kibana:
-
-1. Uncommet checkout line in Docker file
-2. Run `build.sh`
-3. Push all changes to GitHub: `git push --tags --force`
-
+The script `build.sh` automatically creates tags for every version of Kibana, just run it and follow the instructions!

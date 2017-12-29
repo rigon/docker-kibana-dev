@@ -1,13 +1,13 @@
 FROM node
 
-## Uncommet checkout line to use this version
-# ENV KIBANA_VERSION 6.1.1
+# Choose which Kibana version you want
+# follow Git terminology to checkout tags: "tags/v<version>"
+ENV KIBANA_VERSION master
 
 RUN set -x \
 	&& git clone https://github.com/elastic/kibana.git \
 	&& cd kibana \
-	# Uncomment if you want a specific version
-	# && git checkout tags/v$KIBANA_VERSION \
+	&& git checkout $KIBANA_VERSION \
 	&& rm -rf .git \
 	&& npm install \
 	
