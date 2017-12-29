@@ -68,7 +68,7 @@ create_version() {
 	git add Dockerfile
 	git commit -m "Kibana v$tagname"
 	git tag $tagname
-
+	git reset HEAD~
 }
 
 
