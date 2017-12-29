@@ -7,7 +7,7 @@ ENV KIBANA_VERSION master
 RUN set -x \
 	&& git clone https://github.com/elastic/kibana.git \
 	&& cd kibana \
-	&& git checkout tags/v$KIBANA_VERSION \
+	&& git checkout $KIBANA_VERSION \
 	&& rm -rf .git \
 	&& npm install \
 	
