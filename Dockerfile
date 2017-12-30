@@ -1,8 +1,8 @@
-FROM node:slim
+FROM node:6.11.1-slim
 
 # Choose which Kibana version you want
 # follow Git terminology to checkout tags: "tags/v<version>"
-ENV KIBANA_VERSION master
+ENV KIBANA_VERSION tags/v4.6.5
 
 RUN set -x \
 	&& apt-get update \
