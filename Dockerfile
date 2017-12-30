@@ -1,8 +1,8 @@
-FROM node:alpine
+FROM node:0.10-alpine
 
 # Choose which Kibana version you want
 # follow Git terminology to checkout tags: "tags/v<version>"
-ENV KIBANA_VERSION master
+ENV KIBANA_VERSION tags/v3.1.3
 
 RUN set -x \
 	&& apk update \
