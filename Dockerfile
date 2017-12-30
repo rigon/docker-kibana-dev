@@ -1,8 +1,8 @@
-FROM node
+FROM node:6.11.1
 
 # Choose which Kibana version you want
 # follow Git terminology to checkout tags: "tags/v<version>"
-ENV KIBANA_VERSION master
+ENV KIBANA_VERSION tags/v5.6.1
 
 RUN set -x \
 	&& git clone https://github.com/elastic/kibana.git \
