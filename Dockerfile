@@ -13,6 +13,7 @@ RUN set -x \
 	&& rm -rf .git \
 	&& npm install \
 	&& apt-get purge -y git gcc g++ make python \
+	&& apt-get autoremove -y \
 	#
 	# the default "server.host" is "localhost" in 5+
 	&& sed -ri "s!^(\#\s*)?(server\.host:).*!\2 '0.0.0.0'!" /kibana/config/kibana.yml \
