@@ -12,8 +12,8 @@ if [ ! -e Dockerfile ]; then
 	exit 1
 fi
 
-echo "A clone of Kibana repository is required to proceed in /tmp!"
-read -r -p "Do you want remove existing clone and clone again (YES/No)? " ans
+echo "A clone of Kibana repository in /tmp is required to proceed!"
+read -r -p "Do you want clone it (YES/No)? " ans
 if [ "$ans" != "n" ]; then
 	pushd .
 	cd /tmp
@@ -68,7 +68,8 @@ create_version() {
 	git add Dockerfile
 	git commit -m "Kibana v$tagname"
 	git tag $tagname
-
+	git reset HEAD~
+	git checkout -- Dockerfile
 }
 
 
@@ -97,23 +98,26 @@ for version in $versions; do
 	create_version $version $node_version-alpine $version-alpine
 done
 
+# Back to master
+git checkout master
+
 echo
 echo -e "${RED}CAUTION: THIS ACTION IS IRREVERSIBLE!!${NC}"
 echo "This will delete all tags in the REMOTE repository!"
-read -r -p "Do you want delete all tags in REMOTE reposiroty (yes/NO)? " ans
+read -r -p "Do you want delete all tags in REMOTE repository (yes/NO)? " ans
 if [ "$ans" = "yes" ]; then
 	git push --delete origin $(git ls-remote --tags origin | cut -f 2-)
 fi
 
 echo
 echo "This will push all local tags to the remote repository!"
-read -r -p "Do you want push tag changes (YES/No)? " ans
+read -r -p "Do you want push tags changes (YES/No)? " ans
 if [ "$ans" != "n" ]; then
 	git push --tags --force
 fi
 
 echo
-echo -e "${YELLOW}Docker Hub trigger token is required to proceed${NC}"
+echo -e "${YELLOW}Docker Hub trigger token is required to trigger builds${NC}"
 read -r -p "Trigger token: " trigger_token
 if [ "$trigger_token" = "" ]; then
 	echo -e "${RED}No trigger token provided!${NC}"
@@ -121,9 +125,28 @@ if [ "$trigger_token" = "" ]; then
 	exit 1
 fi
 
+
 echo
-echo "This will trigger the building of images of all main versions!"
-read -r -p "Do you want to trigger (YES/No)? " ans
+echo -e "${YELLOW}We are about to trigger builds${NC}"
+echo "This will trigger builging all versions, i. e. all tags."
+echo "If not, you will be asked to build main, slim and alpine versions."
+read -r -p "Do you want to trigger building all versions (Yes/NO)? " ans
+if [ "$ans" = "y" ]; then
+	for tag in $(git tag); do
+		echo -n -e "${YELLOW}$tag${NC} "
+		curl -X POST -H "Content-Type: application/json" \
+			--data \{\"source_type\":\ \"Tag\",\ \"source_name\":\ \"${tag}\"\} \
+			https://registry.hub.docker.com/u/rigon/kibana-dev/trigger/$trigger_token/;
+		echo
+		sleep 1m
+	done
+	echo -e "${GREEN}DONE!${NC}"
+	exit 0
+fi
+
+
+echo
+read -r -p "Do you want to trigger building all main versions (YES/No)? " ans
 if [ "$ans" != "n" ]; then
 	for tag in $(git tag | grep -v -E "alpine|slim"); do
 		echo -n -e "${YELLOW}$tag${NC} "
@@ -137,8 +160,7 @@ fi
 
 
 echo
-echo "This will trigger the building of images of all slim versions!"
-read -r -p "Do you want to trigger (YES/No)? " ans
+read -r -p "Do you want to trigger building all slim versions (YES/No)? " ans
 if [ "$ans" != "n" ]; then
 	for tag in $(git tag | grep slim); do
 		echo -n -e "${YELLOW}$tag${NC} "
@@ -151,8 +173,7 @@ if [ "$ans" != "n" ]; then
 fi
 
 echo
-echo "This will trigger the building of images of all alpine versions!"
-read -r -p "Do you want to trigger (YES/No)? " ans
+read -r -p "Do you want to trigger building all alpine versions (YES/No)? " ans
 if [ "$ans" != "n" ]; then
 	for tag in $(git tag | grep alpine); do
 		echo -n -e "${YELLOW}$tag${NC} "
@@ -163,3 +184,5 @@ if [ "$ans" != "n" ]; then
 		sleep 1m
 	done
 fi
+
+echo -e "${GREEN}DONE!${NC}"
